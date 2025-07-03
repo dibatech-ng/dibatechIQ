@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, StatusBar, ImageBackground } 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts as useMontserrat, Montserrat_400Regular, Montserrat_600SemiBold } from '@expo-google-fonts/montserrat';
 import { useFonts as useChewy, Chewy_400Regular } from '@expo-google-fonts/chewy';
+import { Link } from 'expo-router';
 
 export default function IntroScreen() {
   const [montserratLoaded] = useMontserrat({
@@ -50,7 +51,9 @@ export default function IntroScreen() {
           colors={['#D3E734', '#3DBE3D']}
           style={styles.button}
         >
+        <Link href="Info">
           <Text style={styles.buttonText}>START →</Text>
+          </Link>
         </LinearGradient>
       </TouchableOpacity>
     </ImageBackground>
