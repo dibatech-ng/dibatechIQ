@@ -6,20 +6,20 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Image,
 } from 'react-native';
 
-// Import SVGs
-import FrontendIcon from '../assets/frontend.svg';
-import BackendIcon from '../assets/backend.svg';
-import FullstackIcon from '../assets/fullstack.svg';
-
 import { useRouter } from 'expo-router';
+
+import frontendImg from '../assets/frontend.png';
+import backendImg from '../assets/backend.png';
+import fullstackImg from '../assets/fullstack.png';
 
 export default function ChooseStackScreen() {
   const router = useRouter();
 
   const handleSelect = (stack) => {
-    router.push(`/stack/${stack}`); // e.g. navigates to /stack/fullstack
+    router.push(`/stack/${stack}`);
   };
 
   return (
@@ -27,26 +27,23 @@ export default function ChooseStackScreen() {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Choose stack</Text>
 
-        {/* Full-stack Developer */}
         <TouchableOpacity style={styles.option} onPress={() => handleSelect('fullstack')}>
           <View style={[styles.image, { backgroundColor: '#A348C3' }]}>
-            <FullstackIcon width={60} height={60} />
+            <Image source={fullstackImg} style={styles.icon} />
           </View>
           <Text style={styles.label}>Full-stack developer</Text>
         </TouchableOpacity>
 
-        {/* Front-end Developer */}
         <TouchableOpacity style={styles.option} onPress={() => handleSelect('frontend')}>
           <View style={[styles.image, { backgroundColor: '#0B60F4' }]}>
-            <FrontendIcon width={60} height={60} />
+            <Image source={frontendImg} style={styles.icon} />
           </View>
           <Text style={styles.label}>Front-end developer</Text>
         </TouchableOpacity>
 
-        {/* Back-end Developer */}
         <TouchableOpacity style={styles.option} onPress={() => handleSelect('backend')}>
           <View style={[styles.image, { backgroundColor: '#E53935' }]}>
-            <BackendIcon width={60} height={60} />
+            <Image source={backendImg} style={styles.icon} />
           </View>
           <Text style={styles.label}>Back-end developer</Text>
         </TouchableOpacity>
@@ -54,7 +51,6 @@ export default function ChooseStackScreen() {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -71,7 +67,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 40,
-    fontFamily: 'Cochin', // Optional: Replace with custom font if needed
+    fontFamily: 'Cochin',
   },
   option: {
     alignItems: 'center',
@@ -85,6 +81,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
+  },
+  icon: {
+    width: 60,
+    height: 60,
+    resizeMode: 'contain',
   },
   label: {
     color: '#fff',

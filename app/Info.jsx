@@ -55,10 +55,8 @@ export default function App() {
     }
 
     try {
-      // Only save the data locally — no authentication
       await AsyncStorage.setItem('user', JSON.stringify({ name, email }));
 
-      // Navigate to the /stack screen
       router.push('/stack');
     } catch (error) {
       Alert.alert('Storage Error', error.message);

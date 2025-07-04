@@ -9,11 +9,14 @@ import {
   StatusBar,
 } from 'react-native';
 import { useFonts, Chewy_400Regular } from '@expo-google-fonts/chewy';
+import { useRouter } from 'expo-router';
 
 export default function SelectLanguageScreen() {
   const [fontsLoaded] = useFonts({
     Chewy_400Regular,
   });
+
+  const router = useRouter();
 
   if (!fontsLoaded) return null;
 
@@ -26,6 +29,10 @@ export default function SelectLanguageScreen() {
     { name: 'dotnet', icon: require('../../assets/dotnet.png'), bgColor: '#512BD4' },
   ];
 
+  const handleSelect = (language) => {
+    router.push('/level');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -36,6 +43,7 @@ export default function SelectLanguageScreen() {
           <TouchableOpacity
             key={index}
             style={[styles.card, { backgroundColor: lang.bgColor }]}
+            onPress={() => handleSelect(lang.name)}
           >
             <Image source={lang.icon} style={styles.icon} />
             <Text style={styles.label}>{lang.name}</Text>
