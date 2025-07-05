@@ -9,12 +9,15 @@ import {
   ImageBackground,
 } from 'react-native';
 import { Chewy_400Regular, useFonts } from '@expo-google-fonts/chewy';
+import { useRouter } from 'expo-router'; // ✅ Use useRouter
 import BottomNavigation from '../components/BottomNavigation';
 
 export default function HomeScreen() {
   const [fontsLoaded] = useFonts({
     Chewy_400Regular,
   });
+
+  const router = useRouter(); // ✅ Router hook
 
   if (!fontsLoaded) return null;
 
@@ -84,7 +87,10 @@ export default function HomeScreen() {
           </ImageBackground>
 
           {/* Start Button */}
-          <TouchableOpacity style={styles.startButton}>
+          <TouchableOpacity
+            style={styles.startButton}
+            onPress={() => router.push('/countdown')} // ✅ updated to use router.push
+          >
             <Text style={styles.startText}>Start</Text>
           </TouchableOpacity>
         </SafeAreaView>
@@ -102,7 +108,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     position: 'relative',
-    backgroundColor: '#0C4A3A', // fallback in case image fails to load
+    backgroundColor: '#0C4A3A',
   },
   background: {
     flex: 1,
@@ -113,7 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 40,
-    paddingBottom: 100, // space for fixed bottom nav
+    paddingBottom: 100,
   },
   bottomBar: {
     position: 'absolute',
@@ -121,7 +127,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: '#0C4A3A', // match background color
+    backgroundColor: '#0C4A3A',
   },
   profileCard: {
     backgroundColor: '#2962FF',

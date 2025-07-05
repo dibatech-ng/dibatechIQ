@@ -40,6 +40,14 @@ export default function App() {
     Chewy_400Regular,
   });
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const isNameValid = name.trim().length >= 2;
+  const isEmailValid = emailRegex.test(email);
+  const isPasswordValid = password.length >= 8;
+
+  const isFormValid = isNameValid && isEmailValid && isPasswordValid;
+
   if (!montserratLoaded || !chewyLoaded) {
     return (
       <View style={styles.loading}>
@@ -49,19 +57,19 @@ export default function App() {
   }
 
   const handleSubmit = async () => {
-    if (!name || !email || !password) {
-      Alert.alert('Please fill all fields');
-      return;
-    }
-
     try {
       await AsyncStorage.setItem('user', JSON.stringify({ name, email }));
-
       router.push('/stack');
     } catch (error) {
       Alert.alert('Storage Error', error.message);
     }
   };
+
+  const renderIcon = (isValid) => (
+    <Text style={[styles.icon, { color: isValid ? 'green' : 'red' }]}>
+      {isValid ? '✓' : '✕'}
+    </Text>
+  );
 
   return (
     <ImageBackground
@@ -77,38 +85,59 @@ export default function App() {
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Name</Text>
-          <TextInput
-            placeholder="e.g john"
-            style={styles.input}
-            placeholderTextColor="#555"
-            value={name}
-            onChangeText={setName}
-          />
+          <View style={styles.inputWrapper}>
+            <TextInput
+              placeholder="e.g john"
+              style={styles.input}
+              placeholderTextColor="#555"
+              value={name}
+              onChangeText={setName}
+            />
+            {name.length > 0 && renderIcon(isNameValid)}
+          </View>
+          {!isNameValid && name.length > 0 && (
+            <Text style={styles.error}>Name must be at least 2 characters</Text>
+          )}
 
           <Text style={styles.label}>Email</Text>
-          <TextInput
-            placeholder="e.g johndoe@mail.com"
-            style={styles.input}
-            keyboardType="email-address"
-            placeholderTextColor="#555"
-            value={email}
-            onChangeText={setEmail}
-          />
+          <View style={styles.inputWrapper}>
+            <TextInput
+              placeholder="e.g johndoe@mail.com"
+              style={styles.input}
+              keyboardType="email-address"
+              placeholderTextColor="#555"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+            />
+            {email.length > 0 && renderIcon(isEmailValid)}
+          </View>
+          {!isEmailValid && email.length > 0 && (
+            <Text style={styles.error}>Enter a valid email address</Text>
+          )}
 
           <Text style={styles.label}>Password</Text>
-          <TextInput
-            placeholder="Password"
-            secureTextEntry
-            style={styles.input}
-            placeholderTextColor="#555"
-            value={password}
-            onChangeText={setPassword}
-          />
+          <View style={styles.inputWrapper}>
+            <TextInput
+              placeholder="Password"
+              secureTextEntry
+              style={styles.input}
+              placeholderTextColor="#555"
+              value={password}
+              onChangeText={setPassword}
+            />
+            {password.length > 0 && renderIcon(isPasswordValid)}
+          </View>
+          {!isPasswordValid && password.length > 0 && (
+            <Text style={styles.error}>Password must be at least 8 characters</Text>
+          )}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>CONTINUE</Text>
-        </TouchableOpacity>
+        {isFormValid && (
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>CONTINUE</Text>
+          </TouchableOpacity>
+        )}
       </SafeAreaView>
     </ImageBackground>
   );
@@ -143,13 +172,31 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     fontFamily: 'Montserrat_600SemiBold',
   },
+  inputWrapper: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
   input: {
     backgroundColor: '#fff',
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    marginBottom: 20,
+    paddingRight: 40,
+    marginBottom: 5,
     fontSize: 16,
+    fontFamily: 'Montserrat_400Regular',
+  },
+  icon: {
+    position: 'absolute',
+    right: 16,
+    top: 16,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  error: {
+    color: '#ffaaaa',
+    marginBottom: 10,
+    fontSize: 13,
     fontFamily: 'Montserrat_400Regular',
   },
   button: {
@@ -162,6 +209,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 5,
     elevation: 5,
+    marginTop: 10,
   },
   buttonText: {
     color: '#fff',
