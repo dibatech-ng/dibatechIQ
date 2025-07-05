@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 
 import { useRouter } from 'expo-router';
+import { useUserData } from '../context/UserDataContext'; // ✅ Import context
 
 import frontendImg from '../assets/frontend.png';
 import backendImg from '../assets/backend.png';
@@ -17,8 +18,13 @@ import fullstackImg from '../assets/fullstack.png';
 
 export default function ChooseStackScreen() {
   const router = useRouter();
+  const { userData, setUserData } = useUserData(); // ✅ Use context
 
   const handleSelect = (stack) => {
+    // ✅ Save selected stack
+    setUserData({ ...userData, stack });
+
+    // ✅ Continue with your route logic
     router.push(`/stack/${stack}`);
   };
 

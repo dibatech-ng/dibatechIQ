@@ -8,11 +8,10 @@ import {
   StatusBar,
   SafeAreaView,
   ImageBackground,
-  Alert,
 } from 'react-native';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { useUserData } from '../context/UserDataContext'; // ✅ Import context
 
 import {
   useFonts as useMontserrat,
@@ -25,11 +24,12 @@ import {
   Chewy_400Regular,
 } from '@expo-google-fonts/chewy';
 
-export default function App() {
+export default function InfoScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+  const { userData, setUserData } = useUserData(); // ✅ Use context
 
   const [montserratLoaded] = useMontserrat({
     Montserrat_400Regular,
@@ -41,11 +41,9 @@ export default function App() {
   });
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   const isNameValid = name.trim().length >= 2;
   const isEmailValid = emailRegex.test(email);
   const isPasswordValid = password.length >= 8;
-
   const isFormValid = isNameValid && isEmailValid && isPasswordValid;
 
   if (!montserratLoaded || !chewyLoaded) {
@@ -56,13 +54,14 @@ export default function App() {
     );
   }
 
-  const handleSubmit = async () => {
-    try {
-      await AsyncStorage.setItem('user', JSON.stringify({ name, email }));
-      router.push('/stack');
-    } catch (error) {
-      Alert.alert('Storage Error', error.message);
-    }
+  const handleSubmit = () => {
+    // ✅ Save data to context
+    setUserData({
+      ...userData,
+      name,
+      email,
+    });
+    router.push('/stack'); // Navigate to stack screen
   };
 
   const renderIcon = (isValid) => (

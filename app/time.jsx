@@ -12,10 +12,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFonts as useChewy, Chewy_400Regular } from '@expo-google-fonts/chewy';
 import { useRouter } from 'expo-router';
+import { useUserData } from '../context/UserDataContext'; // ✅ Import global context
 
 export default function QuizTimeScreen() {
   const [fontsLoaded] = useChewy({ Chewy_400Regular });
   const router = useRouter();
+  const { userData, setUserData } = useUserData(); // ✅ Use context
 
   const [time1, setTime1] = useState(new Date(2023, 1, 1, 8, 30));
   const [time2, setTime2] = useState(new Date(2023, 1, 1, 13, 30));
@@ -60,6 +62,21 @@ export default function QuizTimeScreen() {
     if (selectedTimeIndex === 1) return time1;
     if (selectedTimeIndex === 2) return time2;
     return time3;
+  };
+
+  const handleGo = () => {
+    // ✅ Save formatted times to context
+    setUserData({
+      ...userData,
+      quizTimes: {
+        quiz1: formatTime(time1),
+        quiz2: formatTime(time2),
+        quiz3: formatTime(time3),
+      },
+    });
+
+    // ✅ Keep original routing
+    router.push('/welcome');
   };
 
   return (
@@ -112,11 +129,7 @@ export default function QuizTimeScreen() {
         </Modal>
       )}
 
-      {/* Go Button */}
-      <TouchableOpacity
-        style={styles.goButton}
-        onPress={() => router.push('/welcome')}
-      >
+      <TouchableOpacity style={styles.goButton} onPress={handleGo}>
         <LinearGradient
           colors={['#C6F68D', '#74DBEF']}
           style={styles.gradient}

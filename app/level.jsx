@@ -7,34 +7,37 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { useFonts, Chewy_400Regular } from '@expo-google-fonts/chewy';
-import { useRouter } from 'expo-router'; 
+import { useRouter } from 'expo-router';
+import { useUserData } from '../context/UserDataContext'; // ✅ Import global context
 
 export default function ProgrammingLevelScreen() {
   const [fontsLoaded] = useFonts({
     Chewy_400Regular,
   });
 
-  const router = useRouter(); 
+  const router = useRouter();
+  const { userData, setUserData } = useUserData(); // ✅ Use context
 
   if (!fontsLoaded) return null;
 
-  const handleSelectLevel = () => {
-    router.push('/time'); 
+  const handleSelectLevel = (level) => {
+    setUserData({ ...userData, level }); // ✅ Save selected level
+    router.push('/time');
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Select programming level</Text>
 
-      <TouchableOpacity style={styles.button} onPress={handleSelectLevel}>
+      <TouchableOpacity style={styles.button} onPress={() => handleSelectLevel('Beginner')}>
         <Text style={styles.buttonText}>Beginner</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleSelectLevel}>
+      <TouchableOpacity style={styles.button} onPress={() => handleSelectLevel('Intermediate')}>
         <Text style={styles.buttonText}>Intermediate</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleSelectLevel}>
+      <TouchableOpacity style={styles.button} onPress={() => handleSelectLevel('Professional')}>
         <Text style={styles.buttonText}>Professional</Text>
       </TouchableOpacity>
     </SafeAreaView>

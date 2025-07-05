@@ -9,21 +9,19 @@ import {
   ImageBackground,
 } from 'react-native';
 import { Chewy_400Regular, useFonts } from '@expo-google-fonts/chewy';
-import { useRouter } from 'expo-router'; // ✅ Use useRouter
+import { useRouter } from 'expo-router';
 import BottomNavigation from '../components/BottomNavigation';
+import { useUserData } from '../context/UserDataContext'; // ✅ Import context
 
 export default function HomeScreen() {
-  const [fontsLoaded] = useFonts({
-    Chewy_400Regular,
-  });
-
-  const router = useRouter(); // ✅ Router hook
+  const [fontsLoaded] = useFonts({ Chewy_400Regular });
+  const router = useRouter();
+  const { userData } = useUserData(); // ✅ Access context
 
   if (!fontsLoaded) return null;
 
   return (
     <View style={styles.screen}>
-      {/* Background Image */}
       <ImageBackground
         source={require('../assets/bg2img.png')}
         style={styles.background}
@@ -38,7 +36,7 @@ export default function HomeScreen() {
                   source={require('../assets/user.png')}
                   style={styles.profileImage}
                 />
-                <Text style={styles.username}>MAXNDREL</Text>
+                <Text style={styles.username}>{userData.name || 'MAXNDREL'}</Text>
               </View>
               <View style={styles.profileItem}>
                 <Text style={styles.topLabel}>XP</Text>
@@ -57,25 +55,35 @@ export default function HomeScreen() {
             imageStyle={{ borderRadius: 25, opacity: 0.5, marginLeft: 50 }}
             style={styles.quizCard}
           >
-            <Text style={styles.quizTitle}>Front-end Developer</Text>
-            <Text style={styles.level}>level: 1</Text>
+            <Text style={styles.quizTitle}>
+              {userData.stack || 'Your Stack'}
+            </Text>
+            <Text style={styles.level}>
+              level: {userData.level || 'Not Set'}
+            </Text>
 
             <View style={styles.quizRow}>
               <Text style={styles.quizLabel}>First quiz</Text>
               <View style={styles.timeBox}>
-                <Text style={styles.timeText}>06:00 PM</Text>
+                <Text style={styles.timeText}>
+                  {userData.quizTimes?.quiz1 || '--:--'}
+                </Text>
               </View>
             </View>
             <View style={styles.quizRow}>
               <Text style={styles.quizLabel}>Second quiz</Text>
               <View style={styles.timeBox}>
-                <Text style={styles.timeText}>01:30 PM</Text>
+                <Text style={styles.timeText}>
+                  {userData.quizTimes?.quiz2 || '--:--'}
+                </Text>
               </View>
             </View>
             <View style={styles.quizRow}>
               <Text style={styles.quizLabel}>Third quiz</Text>
               <View style={styles.timeBox}>
-                <Text style={styles.timeText}>08:30 AM</Text>
+                <Text style={styles.timeText}>
+                  {userData.quizTimes?.quiz3 || '--:--'}
+                </Text>
               </View>
             </View>
 
@@ -89,14 +97,14 @@ export default function HomeScreen() {
           {/* Start Button */}
           <TouchableOpacity
             style={styles.startButton}
-            onPress={() => router.push('/countdown')} // ✅ updated to use router.push
+            onPress={() => router.push('/countdown')}
           >
             <Text style={styles.startText}>Start</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </ImageBackground>
 
-      {/* Fixed Bottom Navigation */}
+      {/* Bottom Navigation */}
       <View style={styles.bottomBar}>
         <BottomNavigation />
       </View>
