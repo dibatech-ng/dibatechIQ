@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons, Feather, FontAwesome5 } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter, usePathname } from 'expo-router';
 
 export default function BottomNavigation() {
@@ -26,10 +26,10 @@ export default function BottomNavigation() {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push('/stats')}>
-        <Feather
-          name="bar-chart-2"
+        <Ionicons
+          name={pathname === '/stats' ? 'stats-chart' : 'stats-chart-outline'}
           size={36}
-          color={pathname === '/stats' ? '#FFD600' : '#fff'}
+          color="#fff"
         />
       </TouchableOpacity>
 
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   bottomBar: {
     position: 'absolute',
     bottom: 0,
-    height: 70,
+    height: 85,
     backgroundColor: '#0C4A3A',
     width: '100%',
     borderTopWidth: 1,

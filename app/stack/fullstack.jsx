@@ -10,13 +10,12 @@ import {
 } from 'react-native';
 import { useFonts, Chewy_400Regular } from '@expo-google-fonts/chewy';
 import { useRouter } from 'expo-router';
+import { useUserData } from '../../context/UserDataContext'; // ✅ import context
 
 export default function SelectLanguageScreen() {
-  const [fontsLoaded] = useFonts({
-    Chewy_400Regular,
-  });
-
+  const [fontsLoaded] = useFonts({ Chewy_400Regular });
   const router = useRouter();
+  const { setUserData } = useUserData(); // ✅ get setter
 
   if (!fontsLoaded) return null;
 
@@ -30,7 +29,12 @@ export default function SelectLanguageScreen() {
   ];
 
   const handleSelect = (language) => {
-    router.push('/level');
+    setUserData((prev) => ({
+      ...prev,
+      stack: 'fullstack', // ✅ set fullstack
+      language: language,
+    }));
+    router.push('/level'); // ✅ navigate
   };
 
   return (

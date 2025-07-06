@@ -1,22 +1,58 @@
-// context/UserDataContext.js
 import React, { createContext, useContext, useState } from 'react';
 
 const UserDataContext = createContext();
 
 export const UserDataProvider = ({ children }) => {
-  const [userData, setUserData] = useState({
-    name: '',
-    stack: '',
-    level: '',
-    quizTimes: {
-      quiz1: '',
-      quiz2: '',
-      quiz3: '',
-    },
+  const [userData, setUserData] = useState({});
+  const [quizResults, setQuizResults] = useState([]);
+
+  // Stats tracking state
+  const [stats, setStats] = useState({
+    totalQuestionsAnswered: 0,
+    totalCorrect: 0,
+    longestStreak: 0,
+    currentStreak: 0,
   });
 
+  // Function to update stats based on a new answer (boolean: isCorrect)
+  const updateStats = (isCorrect) => {
+    setStats((prevStats) => {
+      let newCurrentStreak = isCorrect ? prevStats.currentStreak + 1 : 0;
+      let newLongestStreak = Math.max(prevStats.longestStreak, newCurrentStreak);
+      let newTotalQuestionsAnswered = prevStats.totalQuestionsAnswered + 1;
+      let newTotalCorrect = isCorrect ? prevStats.totalCorrect + 1 : prevStats.totalCorrect;
+
+      return {
+        totalQuestionsAnswered: newTotalQuestionsAnswered,
+        totalCorrect: newTotalCorrect,
+        longestStreak: newLongestStreak,
+        currentStreak: newCurrentStreak,
+      };
+    });
+  };
+
+  // Optionally, reset stats function
+  const resetStats = () => {
+    setStats({
+      totalQuestionsAnswered: 0,
+      totalCorrect: 0,
+      longestStreak: 0,
+      currentStreak: 0,
+    });
+  };
+
   return (
-    <UserDataContext.Provider value={{ userData, setUserData }}>
+    <UserDataContext.Provider
+      value={{
+        userData,
+        setUserData,
+        quizResults,
+        setQuizResults,
+        stats,
+        updateStats,
+        resetStats,
+      }}
+    >
       {children}
     </UserDataContext.Provider>
   );

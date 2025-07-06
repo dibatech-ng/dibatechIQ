@@ -56,7 +56,12 @@ export default function HomeScreen() {
             style={styles.quizCard}
           >
             <Text style={styles.quizTitle}>
-              {userData.stack || 'Your Stack'}
+              {(userData.stack?.toUpperCase() || 'STACK') +
+                (userData.language
+                  ? '-' +
+                    userData.language.charAt(0).toUpperCase() +
+                    userData.language.slice(1).toLowerCase()
+                  : '')}
             </Text>
             <Text style={styles.level}>
               level: {userData.level || 'Not Set'}
@@ -143,7 +148,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 20,
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 40,
     marginTop: 40,
   },
   profileRow: {
@@ -181,10 +186,10 @@ const styles = StyleSheet.create({
   quizCard: {
     backgroundColor: '#FF3D3D',
     width: '85%',
-    height: 430,
+    height: 400,
     borderRadius: 25,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 40,
     justifyContent: 'center',
   },
   quizTitle: {

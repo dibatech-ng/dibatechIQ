@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   description: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
     fontFamily: 'System',
   },

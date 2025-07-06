@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import BottomNavigation from '../components/BottomNavigation';
+import { useStats } from '../context/StatsContext';
 
 const leaderboard = [
   { name: 'john', xp: 11034 },
@@ -25,8 +26,12 @@ const leaderboard = [
 ];
 
 export default function StatisticsScreen() {
+  const { totalAnswered, totalCorrect, longestStreak, currentStreak } = useStats();
   const top3 = leaderboard.slice(0, 3);
   const rest = leaderboard.slice(3);
+
+  const correctPercent = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+  const incorrectPercent = 100 - correctPercent;
 
   return (
     <View style={styles.screen}>
@@ -48,18 +53,20 @@ export default function StatisticsScreen() {
 
             {/* Stats Section */}
             <View style={styles.statsBox}>
-              <Text style={styles.statsText}>Correct: 0%   Incorrect: 0%</Text>
-              <Text style={styles.statLine}>Questions Answered      0</Text>
-              <Text style={styles.statLine}>Total Correct           0</Text>
-              <Text style={styles.statLine}>Longest Streak          0</Text>
-              <Text style={styles.statLine}>Current Streak          0</Text>
+              <Text style={styles.statsText}>
+                Correct: {correctPercent}%   Incorrect: {incorrectPercent}%
+              </Text>
+              <Text style={styles.statLine}>Questions Answered      {totalAnswered}</Text>
+              <Text style={styles.statLine}>Total Correct           {totalCorrect}</Text>
+              <Text style={styles.statLine}>Longest Streak          {longestStreak}</Text>
+              <Text style={styles.statLine}>Current Streak          {currentStreak}</Text>
             </View>
 
             {/* Leaderboard */}
             <View style={styles.leaderboardBox}>
               <View style={styles.leaderboardHeader}>
                 <Text style={styles.leaderboardTitle}>Leaderboard</Text>
-                <Text style={styles.leaderboardTitle}>Top 7</Text>
+                <Text style={styles.leaderboardTitle}>Top 10</Text>
               </View>
 
               <View style={styles.topRow}>

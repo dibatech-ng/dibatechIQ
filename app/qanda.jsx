@@ -8,8 +8,22 @@ import {
   Animated,
 } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { useUserData } from '../context/UserDataContext';
+import { questionMap } from '../questionMap';
+import { useRouter } from 'expo-router';
+
+function shuffleArray(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
 
 export default function QuestionScreen() {
+  const router = useRouter();
+  const { userData, updateStats } = useUserData();
+  const stack = userData.stack?.toLowerCase();
+  const language = userData.language?.toLowerCase();
+  const allQuestions = questionMap[stack]?.[language] || [];
+
+  const [questions, setQuestions] = useState([]);
   const [timer, setTimer] = useState(10);
   const [favorited, setFavorited] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -17,16 +31,24 @@ export default function QuestionScreen() {
   const toastAnim = useState(new Animated.Value(0))[0];
 
   const [selectedOption, setSelectedOption] = useState(null);
-  const correctOption = 'C';
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
-    if (timer > 0) {
-      const interval = setTimeout(() => setTimer(timer - 1), 1000);
+    const picked = shuffleArray(allQuestions).slice(0, 5); // pick 5 random
+    setQuestions(picked);
+  }, []);
+
+  const currentQuestion = questions[currentIndex];
+  const correctOption = currentQuestion?.correct;
+  const isCorrect = selectedOption === correctOption;
+
+  useEffect(() => {
+    if (timer > 0 && !selectedOption) {
+      const interval = setTimeout(() => setTimer((t) => t - 1), 1000);
       return () => clearTimeout(interval);
-    } else {
-      console.log("Time's up!");
     }
-  }, [timer]);
+  }, [timer, selectedOption]);
 
   const handleFavorite = () => {
     const newStatus = !favorited;
@@ -50,22 +72,65 @@ export default function QuestionScreen() {
   };
 
   const handleOptionPress = (option) => {
-    if (selectedOption) return;
-    setSelectedOption(option);
+    if (!selectedOption) {
+      setSelectedOption(option);
+    }
+  };
+
+  const handleNext = () => {
+    const newAnswer = {
+      question: currentQuestion.question,
+      selected: selectedOption,
+      correct: correctOption,
+      isCorrect,
+    };
+
+    setAnswers((prev) => [...prev, newAnswer]);
+    updateStats(isCorrect); // Update global stats here
+    setCurrentIndex((prev) => prev + 1);
+    setSelectedOption(null);
+    setTimer(10);
+  };
+
+  const handleShowSummary = () => {
+    const finalAnswer = {
+      question: currentQuestion.question,
+      selected: selectedOption,
+      correct: correctOption,
+      isCorrect,
+    };
+    const finalAnswers = [...answers, finalAnswer];
+
+    updateStats(isCorrect); // Update stats for the last answer
+
+    const correctCount = finalAnswers.filter((a) => a.isCorrect).length;
+
+    router.push({
+      pathname: '/summary',
+      params: {
+        score: correctCount,
+        total: finalAnswers.length,
+      },
+    });
   };
 
   const getOptionStyle = (option) => {
     if (!selectedOption) return styles.option;
-    if (option === correctOption && selectedOption === correctOption)
-      return [styles.option, styles.correctOption];
-    if (option === selectedOption && selectedOption !== correctOption)
+    if (option === correctOption) return [styles.option, styles.correctOption];
+    if (option === selectedOption && option !== correctOption)
       return [styles.option, styles.wrongOption];
-    if (option === correctOption && selectedOption !== correctOption)
-      return [styles.option, styles.correctOption];
     return styles.option;
   };
 
-  const isCorrect = selectedOption === correctOption;
+  if (questions.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: 'white', marginTop: 100 }}>
+          No questions found for: {userData.stack}-{userData.language}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ImageBackground
@@ -74,7 +139,6 @@ export default function QuestionScreen() {
       resizeMode="cover"
     >
       <View style={styles.container}>
-        {/* Header */}
         <View style={styles.header}>
           <View style={styles.timerBox}>
             <Ionicons name="time-outline" size={24} color="#fff" />
@@ -89,7 +153,6 @@ export default function QuestionScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Toast Notification */}
         {showToast && (
           <Animated.View
             style={[
@@ -111,52 +174,31 @@ export default function QuestionScreen() {
           </Animated.View>
         )}
 
-        {/* Question */}
         <View style={styles.questionBox}>
-          <Text style={styles.questionText}>
-            What is the correct HTML{'\n'}
-            element for inserting a line{'\n'}
-            break?
-          </Text>
+          <Text style={styles.questionText}>{currentQuestion.question}</Text>
         </View>
 
-        {/* Options */}
-        <TouchableOpacity
-          style={getOptionStyle('A')}
-          onPress={() => handleOptionPress('A')}
-        >
-          <Text style={styles.optionText}>A) &lt;break&gt;</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={getOptionStyle('B')}
-          onPress={() => handleOptionPress('B')}
-        >
-          <Text style={styles.optionText}>B) &lt;lb&gt;</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={getOptionStyle('C')}
-          onPress={() => handleOptionPress('C')}
-        >
-          <Text style={styles.optionText}>C) &lt;br&gt;</Text>
-        </TouchableOpacity>
+        {Object.entries(currentQuestion.options).map(([key, value]) => (
+          <TouchableOpacity
+            key={key}
+            style={getOptionStyle(key)}
+            onPress={() => handleOptionPress(key)}
+          >
+            <Text style={styles.optionText}>
+              {key}) {value}
+            </Text>
+          </TouchableOpacity>
+        ))}
 
-        {/* Action Button */}
         {selectedOption && (
           <TouchableOpacity
-            style={[
-              styles.actionButton,
-              isCorrect ? styles.correctButton : styles.wrongButton,
-            ]}
-            onPress={() => {
-              if (isCorrect) {
-                console.log('Proceed to next question');
-              } else {
-                console.log('Explain correct answer');
-              }
-            }}
+            style={[styles.actionButton, styles.nextButton]}
+            onPress={
+              currentIndex + 1 < questions.length ? handleNext : handleShowSummary
+            }
           >
             <Text style={styles.actionText}>
-              {isCorrect ? 'Continue' : 'Check Correct Answer'}
+              {currentIndex + 1 < questions.length ? 'Next Question' : 'See Summary'}
             </Text>
           </TouchableOpacity>
         )}
@@ -237,7 +279,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: '#fff',
     fontWeight: 'bold',
-    fontFamily: 'Chewy_400Regular',
     textAlign: 'center',
   },
   option: {
@@ -262,20 +303,16 @@ const styles = StyleSheet.create({
   optionText: {
     color: '#fff',
     fontSize: 20,
-    fontFamily: 'Chewy_400Regular',
   },
   actionButton: {
-    marginTop: 30,
+    marginTop: 20,
     paddingVertical: 14,
     paddingHorizontal: 50,
     borderRadius: 20,
     elevation: 5,
   },
-  correctButton: {
-    backgroundColor: '#00C853',
-  },
-  wrongButton: {
-    backgroundColor: '#D32F2F',
+  nextButton: {
+    backgroundColor: '#00A884',
   },
   actionText: {
     fontSize: 20,
