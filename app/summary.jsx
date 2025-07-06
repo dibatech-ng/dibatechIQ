@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    paddingTop: 60,
+    paddingTop: 90,
     paddingBottom: 100,
     paddingHorizontal: 20,
     alignItems: 'center',
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#fff',
     marginHorizontal: 2,
-    marginVertical: 1,
+    marginVertical: 15,
   },
   quoteBox: {
     backgroundColor: '#003322',
@@ -118,10 +118,12 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 30,
     width: '100%',
+    height: 130,
+    justifyContent: 'center',
   },
   quote: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 22,
     textAlign: 'center',
     fontFamily: 'Chewy_400Regular',
   },
@@ -130,7 +132,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     width: '100%',
+    height: 350,
     marginBottom: 30,
+    justifyContent: 'center',
   },
   scoreRow: {
     flexDirection: 'row',
@@ -139,8 +143,10 @@ const styles = StyleSheet.create({
   },
   scoreLabel: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
+    marginBottom: 20,
+    marginTop: 20,
   },
   statRow: {
     flexDirection: 'row',
@@ -149,11 +155,13 @@ const styles = StyleSheet.create({
   },
   statText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
+    paddingVertical: 20,
   },
   statValue: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
+    paddingVertical: 20,
   },
   continueButton: {
     backgroundColor: '#002d20',

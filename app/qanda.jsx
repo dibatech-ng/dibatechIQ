@@ -18,7 +18,7 @@ function shuffleArray(array) {
 
 export default function QuestionScreen() {
   const router = useRouter();
-  const { userData, updateStats } = useUserData();
+  const { userData, updateStats, quizResults, setQuizResults } = useUserData();
   const stack = userData.stack?.toLowerCase();
   const language = userData.language?.toLowerCase();
   const allQuestions = questionMap[stack]?.[language] || [];
@@ -53,6 +53,26 @@ export default function QuestionScreen() {
   const handleFavorite = () => {
     const newStatus = !favorited;
     setFavorited(newStatus);
+
+    if (newStatus) {
+      // Save current question + answer to favorites in context
+      const favEntry = {
+        question: currentQuestion.question,
+        options: currentQuestion.options,
+        correct: currentQuestion.correct,
+        // Optionally, save user's selected option if any:
+        selected: selectedOption,
+      };
+
+      // Avoid duplicate favorites by question text:
+      if (!quizResults.some((q) => q.question === favEntry.question)) {
+        setQuizResults([...quizResults, favEntry]);
+      }
+    } else {
+      // Remove from favorites by question text:
+      setQuizResults(quizResults.filter((q) => q.question !== currentQuestion.question));
+    }
+
     setToastMessage(newStatus ? 'Added to favourites' : 'Removed from favourites');
     setShowToast(true);
 
@@ -90,6 +110,7 @@ export default function QuestionScreen() {
     setCurrentIndex((prev) => prev + 1);
     setSelectedOption(null);
     setTimer(10);
+    setFavorited(false); // reset favorite for next question
   };
 
   const handleShowSummary = () => {
@@ -183,6 +204,7 @@ export default function QuestionScreen() {
             key={key}
             style={getOptionStyle(key)}
             onPress={() => handleOptionPress(key)}
+            disabled={!!selectedOption}
           >
             <Text style={styles.optionText}>
               {key}) {value}
@@ -266,7 +288,7 @@ const styles = StyleSheet.create({
   questionBox: {
     backgroundColor: '#0D3628',
     width: '90%',
-    padding: 24,
+    height: 300,
     borderRadius: 20,
     marginBottom: 30,
     shadowColor: '#000',
@@ -274,12 +296,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowRadius: 8,
     elevation: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   questionText: {
     fontSize: 22,
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+    paddingHorizontal: 10,
   },
   option: {
     backgroundColor: '#0D3628',

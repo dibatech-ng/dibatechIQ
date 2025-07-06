@@ -17,10 +17,10 @@ export const UserDataProvider = ({ children }) => {
   // Function to update stats based on a new answer (boolean: isCorrect)
   const updateStats = (isCorrect) => {
     setStats((prevStats) => {
-      let newCurrentStreak = isCorrect ? prevStats.currentStreak + 1 : 0;
-      let newLongestStreak = Math.max(prevStats.longestStreak, newCurrentStreak);
-      let newTotalQuestionsAnswered = prevStats.totalQuestionsAnswered + 1;
-      let newTotalCorrect = isCorrect ? prevStats.totalCorrect + 1 : prevStats.totalCorrect;
+      const newCurrentStreak = isCorrect ? prevStats.currentStreak + 1 : 0;
+      const newLongestStreak = Math.max(prevStats.longestStreak, newCurrentStreak);
+      const newTotalQuestionsAnswered = prevStats.totalQuestionsAnswered + 1;
+      const newTotalCorrect = isCorrect ? prevStats.totalCorrect + 1 : prevStats.totalCorrect;
 
       return {
         totalQuestionsAnswered: newTotalQuestionsAnswered,
