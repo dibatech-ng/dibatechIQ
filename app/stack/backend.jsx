@@ -10,12 +10,13 @@ import {
 } from 'react-native';
 import { useFonts, Chewy_400Regular } from '@expo-google-fonts/chewy';
 import { useRouter } from 'expo-router';
-import { useUserData } from '../../context/UserDataContext'; // ✅ import context
+import { useUserData } from '../../context/UserDataContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SelectLanguageScreen() {
   const [fontsLoaded] = useFonts({ Chewy_400Regular });
   const router = useRouter();
-  const { setUserData } = useUserData(); // ✅ access setUserData
+  const { setUserData } = useUserData();
 
   if (!fontsLoaded) return null;
 
@@ -24,12 +25,22 @@ export default function SelectLanguageScreen() {
     { name: 'dotnet', icon: require('../../assets/dotnet.png'), bgColor: '#512BD4' },
   ];
 
-  const handleSelect = (language) => {
+  const handleSelect = async (language) => {
+    // Save to context
     setUserData((prev) => ({
       ...prev,
-      stack: 'backend', // ✅ set backend stack
-      language: language,
+      stack: 'backend',
+      language,
     }));
+
+    // Save to local storage
+    try {
+      await AsyncStorage.setItem('@user_stack', 'backend');
+      await AsyncStorage.setItem('@user_language', language);
+    } catch (err) {
+      console.warn('Error saving backend language:', err);
+    }
+
     router.push('/level');
   };
 

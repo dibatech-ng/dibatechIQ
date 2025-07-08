@@ -12,12 +12,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFonts as useChewy, Chewy_400Regular } from '@expo-google-fonts/chewy';
 import { useRouter } from 'expo-router';
-import { useUserData } from '../context/UserDataContext'; // ✅ Import global context
+import { useUserData } from '../context/UserDataContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function QuizTimeScreen() {
   const [fontsLoaded] = useChewy({ Chewy_400Regular });
   const router = useRouter();
-  const { userData, setUserData } = useUserData(); // ✅ Use context
+  const { userData, setUserData } = useUserData();
 
   const [time1, setTime1] = useState(new Date(2023, 1, 1, 8, 30));
   const [time2, setTime2] = useState(new Date(2023, 1, 1, 13, 30));
@@ -64,18 +65,24 @@ export default function QuizTimeScreen() {
     return time3;
   };
 
-  const handleGo = () => {
-    // ✅ Save formatted times to context
+  const handleGo = async () => {
+    const quizTimes = {
+      quiz1: formatTime(time1),
+      quiz2: formatTime(time2),
+      quiz3: formatTime(time3),
+    };
+
     setUserData({
       ...userData,
-      quizTimes: {
-        quiz1: formatTime(time1),
-        quiz2: formatTime(time2),
-        quiz3: formatTime(time3),
-      },
+      quizTimes,
     });
 
-    // ✅ Keep original routing
+    try {
+      await AsyncStorage.setItem('@user_quizTimes', JSON.stringify(quizTimes));
+    } catch (err) {
+      console.warn('Failed to save quiz times:', err);
+    }
+
     router.push('/welcome');
   };
 

@@ -8,20 +8,25 @@ import {
 } from 'react-native';
 import { useFonts, Chewy_400Regular } from '@expo-google-fonts/chewy';
 import { useRouter } from 'expo-router';
-import { useUserData } from '../context/UserDataContext'; // ✅ Import global context
+import { useUserData } from '../context/UserDataContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProgrammingLevelScreen() {
-  const [fontsLoaded] = useFonts({
-    Chewy_400Regular,
-  });
-
+  const [fontsLoaded] = useFonts({ Chewy_400Regular });
   const router = useRouter();
-  const { userData, setUserData } = useUserData(); // ✅ Use context
+  const { userData, setUserData } = useUserData();
 
   if (!fontsLoaded) return null;
 
-  const handleSelectLevel = (level) => {
-    setUserData({ ...userData, level }); // ✅ Save selected level
+  const handleSelectLevel = async (level) => {
+    setUserData({ ...userData, level });
+
+    try {
+      await AsyncStorage.setItem('@user_level', level);
+    } catch (err) {
+      console.warn('Error saving user level:', err);
+    }
+
     router.push('/time');
   };
 

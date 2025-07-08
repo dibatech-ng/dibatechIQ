@@ -10,12 +10,13 @@ import {
 } from 'react-native';
 import { useFonts, Chewy_400Regular } from '@expo-google-fonts/chewy';
 import { useRouter } from 'expo-router';
-import { useUserData } from '../../context/UserDataContext'; // ✅ import context
+import { useUserData } from '../../context/UserDataContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SelectLanguageScreen() {
   const [fontsLoaded] = useFonts({ Chewy_400Regular });
   const router = useRouter();
-  const { setUserData } = useUserData(); // ✅ get setter
+  const { setUserData } = useUserData();
 
   if (!fontsLoaded) return null;
 
@@ -26,13 +27,23 @@ export default function SelectLanguageScreen() {
     { name: 'react js', icon: require('../../assets/react.png'), bgColor: '#61DBFB' },
   ];
 
-  const handleSelect = (language) => {
+  const handleSelect = async (language) => {
+    // Save to context
     setUserData((prev) => ({
       ...prev,
-      stack: 'frontend', // ✅ set stack
-      language: language,
+      stack: 'frontend',
+      language,
     }));
-    router.push('/level'); // ✅ navigate
+
+    // Save to local storage
+    try {
+      await AsyncStorage.setItem('@user_stack', 'frontend');
+      await AsyncStorage.setItem('@user_language', language);
+    } catch (err) {
+      console.warn('Error saving language:', err);
+    }
+
+    router.push('/level');
   };
 
   return (

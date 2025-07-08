@@ -1,107 +1,51 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, ImageBackground } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useFonts as useMontserrat, Montserrat_400Regular, Montserrat_600SemiBold } from '@expo-google-fonts/montserrat';
-import { useFonts as useChewy, Chewy_400Regular } from '@expo-google-fonts/chewy';
-import { Link } from 'expo-router';
+// app/index.jsx
+import React, { useEffect } from 'react';
+import { View, Image, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function IntroScreen() {
-  const [montserratLoaded] = useMontserrat({
-    Montserrat_400Regular,
-    Montserrat_600SemiBold,
-  });
+export default function IndexScreen() {
+  const router = useRouter();
 
-  const [chewyLoaded] = useChewy({
-    Chewy_400Regular,
-  });
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const stored = await AsyncStorage.getItem('@user_info');
+        const userInfo = JSON.parse(stored);
 
- if (!montserratLoaded || !chewyLoaded) {
+        setTimeout(() => {
+          if (userInfo?.hasCompletedOnboarding) {
+            router.replace('/home'); // ✅ Already onboarded
+          } else {
+            router.replace('/intro'); // ✅ Show intro screen
+          }
+        }, 1500);
+      } catch (error) {
+        console.warn('Splash error:', error);
+        router.replace('/intro'); // ✅ Fallback to intro
+      }
+    };
+
+    checkOnboarding();
+  }, []);
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0D4C3F' }}>
-      <Text style={{ color: '#fff', fontSize: 18 }}>Loading fonts...</Text>
+    <View style={styles.container}>
+      <Image source={require('../assets/splash-icon.png')} style={styles.logo} />
     </View>
-  );
-}
-
-
-  return (
-    <ImageBackground
-      source={require('../assets/bgimg.jpg')}
-      style={styles.container}
-      resizeMode="cover"
-    >
-      <StatusBar barStyle="light-content" />
-
-      <Text style={styles.welcome}>Welcome Techies</Text>
-
-      <View style={styles.textWrapper}>
-        <Text style={styles.boldText}>Sharpen your skills</Text>
-        <Text style={styles.boldText}>Challenge your mind</Text>
-        <Text style={styles.boldText}>Rise higer</Text>
-
-        <Text style={styles.normalText}>
-          DibaTech IQ is your daily tech trivia for sharper thinking and faster skills.
-        </Text>
-
-        <Text style={styles.normalText}>One question at a time.{'\n'}Ready to grow?</Text>
-      </View>
-
-      <TouchableOpacity style={styles.buttonContainer}>
-        <LinearGradient
-          colors={['#D3E734', '#3DBE3D']}
-          style={styles.button}
-        >
-        <Link href="Info">
-          <Text style={styles.buttonText}>START →</Text>
-          </Link>
-        </LinearGradient>
-      </TouchableOpacity>
-    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 80,
-    paddingHorizontal: 25,
-    justifyContent: 'space-between',
+    backgroundColor: '#fff', // ✅ white background
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  welcome: {
-    color: '#fff',
-    fontSize: 30,
-    fontFamily: 'Chewy_400Regular',
-    alignSelf: 'center',
-  },
-  textWrapper: {
-    marginTop: 20,
-  },
-  boldText: {
-    color: '#fff',
-    fontSize: 24,
-    fontFamily: 'Montserrat_600SemiBold',
-    marginBottom: 6,
-  },
-  normalText: {
-    color: '#fff',
-    fontSize: 18,
-    lineHeight: 28,
-    fontFamily: 'Montserrat_400Regular',
-    marginTop: 14,
-  },
-  buttonContainer: {
-    alignItems: 'flex-end',
-    marginBottom: 80,
-  },
-  button: {
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    elevation: 3,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontFamily: 'Montserrat_600SemiBold',
+  logo: {
+    width: 300, // ✅ larger image
+    height: 300,
+    resizeMode: 'contain',
   },
 });

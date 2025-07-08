@@ -1,5 +1,6 @@
 {
   "expo": {
+    "entryPoint": "./app/initial.jsx",
     "scheme": "DibatechIQapp",
     "name": "Dibatech IQ",
     "slug": "Dibatech-IQ-app",

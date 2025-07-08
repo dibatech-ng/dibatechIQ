@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 
 import { useRouter } from 'expo-router';
-import { useUserData } from '../context/UserDataContext'; // ✅ Import context
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserData } from '../context/UserDataContext';
 
 import frontendImg from '../assets/frontend.png';
 import backendImg from '../assets/backend.png';
@@ -18,13 +19,17 @@ import fullstackImg from '../assets/fullstack.png';
 
 export default function ChooseStackScreen() {
   const router = useRouter();
-  const { userData, setUserData } = useUserData(); // ✅ Use context
+  const { userData, setUserData } = useUserData();
 
-  const handleSelect = (stack) => {
-    // ✅ Save selected stack
+  const handleSelect = async (stack) => {
     setUserData({ ...userData, stack });
 
-    // ✅ Continue with your route logic
+    try {
+      await AsyncStorage.setItem('@user_stack', stack);
+    } catch (err) {
+      console.warn('Failed to save stack:', err);
+    }
+
     router.push(`/stack/${stack}`);
   };
 

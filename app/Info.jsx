@@ -9,9 +9,9 @@ import {
   SafeAreaView,
   ImageBackground,
 } from 'react-native';
-
 import { useRouter } from 'expo-router';
-import { useUserData } from '../context/UserDataContext'; // ✅ Import context
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserData } from '../context/UserDataContext';
 
 import {
   useFonts as useMontserrat,
@@ -29,7 +29,7 @@ export default function InfoScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
-  const { userData, setUserData } = useUserData(); // ✅ Use context
+  const { setUserData } = useUserData();
 
   const [montserratLoaded] = useMontserrat({
     Montserrat_400Regular,
@@ -46,22 +46,23 @@ export default function InfoScreen() {
   const isPasswordValid = password.length >= 8;
   const isFormValid = isNameValid && isEmailValid && isPasswordValid;
 
-  if (!montserratLoaded || !chewyLoaded) {
-    return (
-      <View style={styles.loading}>
-        <Text style={{ color: '#fff' }}>Loading fonts...</Text>
-      </View>
-    );
-  }
-
-  const handleSubmit = () => {
-    // ✅ Save data to context
-    setUserData({
-      ...userData,
+  const handleSubmit = async () => {
+    const userInfo = {
       name,
       email,
-    });
-    router.push('/stack'); // Navigate to stack screen
+      password,
+      hasCompletedOnboarding: true,
+    };
+
+    setUserData(prev => ({ ...prev, ...userInfo }));
+
+    try {
+      await AsyncStorage.setItem('@user_info', JSON.stringify(userInfo));
+    } catch (err) {
+      console.warn('Failed to store user data:', err);
+    }
+
+    router.push('/stack');
   };
 
   const renderIcon = (isValid) => (
@@ -69,6 +70,14 @@ export default function InfoScreen() {
       {isValid ? '✓' : '✕'}
     </Text>
   );
+
+  if (!montserratLoaded || !chewyLoaded) {
+    return (
+      <View style={styles.loading}>
+        <Text style={{ color: '#fff' }}>Loading fonts...</Text>
+      </View>
+    );
+  }
 
   return (
     <ImageBackground
@@ -78,7 +87,6 @@ export default function InfoScreen() {
     >
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
-
         <Text style={styles.header}>Let’s get started</Text>
         <Text style={styles.subHeader}>Personalize your experience</Text>
 
