@@ -52,7 +52,7 @@ export default function HomeScreen() {
           {/* Quiz Card */}
           <ImageBackground
             source={require('../assets/stylebg.png')}
-            imageStyle={{ borderRadius: 25, opacity: 0.5, marginLeft: 50 }}
+            imageStyle={{ borderRadius: 25, opacity: 0.6, marginLeft: 50 }}
             style={styles.quizCard}
           >
             <Text style={styles.quizTitle}>
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0C4A3A',
   },
   profileCard: {
-    backgroundColor: '#2962FF',
+    backgroundColor: '#043120',
     width: '85%',
     borderRadius: 20,
     paddingVertical: 20,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   quizCard: {
-    backgroundColor: '#FF3D3D',
+    backgroundColor: '#043120',
     width: '85%',
     height: 400,
     borderRadius: 25,
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: '85%',
     height: 80,
-    backgroundColor: '#FFD600',
+    backgroundColor: '#03BD03',
     borderRadius: 20,
     elevation: 3,
     justifyContent: 'center',

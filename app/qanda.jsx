@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   nextButton: {
-    backgroundColor: '#00A884',
+    backgroundColor: '#03BD03',
   },
   actionText: {
     fontSize: 20,

@@ -13,16 +13,16 @@ import BottomNavigation from '../components/BottomNavigation';
 import { useStats } from '../context/StatsContext';
 
 const leaderboard = [
-  { name: 'john', xp: 11034 },
-  { name: 'MAXNDREL', xp: 12094, isTop: true },
-  { name: 'Doe', xp: 10234 },
-  { name: 'bella', xp: 832 },
-  { name: 'jason', xp: 792 },
-  { name: 'joe', xp: 628 },
-  { name: 'joy', xp: 618 },
-  { name: 'Grace', xp: 518 },
-  { name: 'jake', xp: 418 },
-  { name: 'jeff', xp: 318 },
+  { name: 'Ebuka', xp: 11034 },
+  { name: 'Ebere', xp: 12094, isTop: true },
+  { name: 'Ade', xp: 10234 },
+  { name: 'Musa', xp: 832 },
+  { name: 'Amaka', xp: 792 },
+  { name: 'Femi', xp: 628 },
+  { name: 'Yemi', xp: 618 },
+  { name: 'Bisola', xp: 518 },
+  { name: 'Sani', xp: 418 },
+  { name: 'Aminu', xp: 318 },
 ];
 
 export default function StatisticsScreen() {

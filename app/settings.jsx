@@ -45,6 +45,11 @@ export default function SettingsScreen() {
 
             {/* Buttons */}
             <TouchableOpacity style={styles.button}>
+              <Ionicons name="code-outline" size={20} color="black" />
+              <Text style={styles.buttonText}>Change language</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button}>
               <Ionicons name="time-outline" size={20} color="black" />
               <Text style={styles.buttonText}>Change Time</Text>
             </TouchableOpacity>
@@ -89,7 +94,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 40,
     paddingBottom: 120,
   },
   title: {
