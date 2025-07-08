@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,63 @@ import {
   ImageBackground,
   ScrollView,
   SafeAreaView,
+  Alert,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 import BottomNavigation from '../components/BottomNavigation';
-import { Ionicons, MaterialIcons, Entypo, Feather } from '@expo/vector-icons';
+import { Ionicons, Entypo, Feather, AntDesign } from '@expo/vector-icons';
+import { useUserData } from '../context/UserDataContext';
 
 export default function SettingsScreen() {
+  const { userData, setUserData } = useUserData();
+  const [imageUri, setImageUri] = useState(userData.profileImage || null);
+  const router = useRouter();
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission to access media library is required!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+      aspect: [1, 1],
+      allowsEditing: true,
+    });
+
+    if (!result.canceled) {
+      const selectedUri = result.assets[0].uri;
+      setImageUri(selectedUri);
+      setUserData(prev => ({ ...prev, profileImage: selectedUri }));
+    }
+  };
+
+  const handleLogout = async () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await AsyncStorage.clear(); // Clear all stored data
+            setUserData({}); // Reset global context
+            router.replace('/index'); // Navigate to onboarding/index screen
+          } catch (err) {
+            console.warn('Logout error:', err);
+          }
+        },
+      },
+    ]);
+  };
+
   return (
     <View style={styles.screen}>
       <ImageBackground
@@ -24,26 +76,33 @@ export default function SettingsScreen() {
           <ScrollView contentContainerStyle={styles.scrollContent}>
             <Text style={styles.title}>Settings</Text>
 
-            {/* Dashed Divider */}
             <View style={styles.dashedLineContainer}>
               {Array.from({ length: 6 }).map((_, index) => (
                 <View key={index} style={styles.dash} />
               ))}
             </View>
 
-            {/* Profile Section */}
             <View style={styles.profileSection}>
-              <Image
-                source={require('../assets/user.png')}
-                style={styles.avatar}
-              />
-              <Text style={styles.editLabel}>
-                Edit <Feather name="edit" size={14} color="#fff" />
+              <TouchableOpacity onPress={pickImage}>
+                <Image
+                  source={
+                    imageUri
+                      ? { uri: imageUri }
+                      : require('../assets/user.png')
+                  }
+                  style={styles.avatar}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={pickImage}>
+                <Text style={styles.editLabel}>
+                  Edit <Feather name="edit" size={14} color="#fff" />
+                </Text>
+              </TouchableOpacity>
+              <Text style={styles.username}>
+                {userData.name || 'Your Name'}
               </Text>
-              <Text style={styles.username}>MAXNDREL</Text>
             </View>
 
-            {/* Buttons */}
             <TouchableOpacity style={styles.button}>
               <Ionicons name="code-outline" size={20} color="black" />
               <Text style={styles.buttonText}>Change language</Text>
@@ -68,11 +127,19 @@ export default function SettingsScreen() {
               <Feather name="key" size={20} color="red" />
               <Text style={styles.dangerText}>Change password</Text>
             </TouchableOpacity>
+
+            {/* Logout Button */}
+            <TouchableOpacity
+              style={[styles.button, styles.logoutButton]}
+              onPress={handleLogout}
+            >
+              <AntDesign name="logout" size={20} color="#D80000" />
+              <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
       </ImageBackground>
 
-      {/* Fixed Bottom Navigation */}
       <View style={styles.bottomBar}>
         <BottomNavigation />
       </View>
@@ -94,7 +161,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     alignItems: 'center',
-    paddingTop: 40,
+    paddingTop: 50,
     paddingBottom: 120,
   },
   title: {
@@ -107,6 +174,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     marginVertical: 20,
+    paddingBottom: 30,
   },
   dash: {
     width: 50,
@@ -117,7 +185,7 @@ const styles = StyleSheet.create({
   },
   profileSection: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 40,
   },
   avatar: {
     width: 100,
@@ -157,6 +225,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginLeft: 12,
     color: 'red',
+  },
+  logoutButton: {
+    backgroundColor: '#FFF5F5',
+    borderColor: '#D80000',
+    borderWidth: 1,
+  },
+  logoutText: {
+    fontSize: 18,
+    marginLeft: 12,
+    color: '#D80000',
+    fontWeight: 'bold',
   },
   bottomBar: {
     position: 'absolute',

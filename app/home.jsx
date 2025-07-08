@@ -11,12 +11,12 @@ import {
 import { Chewy_400Regular, useFonts } from '@expo-google-fonts/chewy';
 import { useRouter } from 'expo-router';
 import BottomNavigation from '../components/BottomNavigation';
-import { useUserData } from '../context/UserDataContext'; // ✅ Import context
+import { useUserData } from '../context/UserDataContext';
 
 export default function HomeScreen() {
   const [fontsLoaded] = useFonts({ Chewy_400Regular });
   const router = useRouter();
-  const { userData } = useUserData(); // ✅ Access context
+  const { userData } = useUserData();
 
   if (!fontsLoaded) return null;
 
@@ -33,7 +33,11 @@ export default function HomeScreen() {
             <View style={styles.profileRow}>
               <View style={styles.profileItem}>
                 <Image
-                  source={require('../assets/user.png')}
+                  source={
+                    userData.profileImage
+                      ? { uri: userData.profileImage }
+                      : require('../assets/user.png')
+                  }
                   style={styles.profileImage}
                 />
                 <Text style={styles.username}>{userData.name || 'MAXNDREL'}</Text>
