@@ -1,6 +1,6 @@
 // app/index.jsx
 import React, { useEffect } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -32,6 +32,7 @@ export default function IndexScreen() {
   return (
     <View style={styles.container}>
       <Image source={require('../assets/splash-icon.png')} style={styles.logo} />
+      <Text style={styles.sponsored}>Sponsored by dibatech.ng</Text>
     </View>
   );
 }
@@ -39,13 +40,19 @@ export default function IndexScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff', // ✅ white background
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
   },
   logo: {
-    width: 300, // ✅ larger image
+    width: 300,
     height: 300,
     resizeMode: 'contain',
+  },
+  sponsored: {
+    position: 'absolute',
+    bottom: 30,
+    fontSize: 14,
+    color: '#888',
   },
 });
